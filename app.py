@@ -99,11 +99,6 @@ def tobs():
 
 @app.route("/api/v1.0/start/<start_date>")
 def startdate(start_date):
-    
-    #test to return date
-    #d={"date":start_date}
-    
-    #return jsonify(d)
 
     session = Session(engine)
     
@@ -114,26 +109,24 @@ def startdate(start_date):
     mx_dt = dt.datetime.strptime(max_date[0], '%Y-%m-%d')
     mi_dt = dt.datetime.strptime(min_date[0], '%Y-%m-%d')
     str_dt = dt.datetime.strptime(start_date,'%Y-%m-%d')
-    #mx_dt = dt.datetime.strptime(max_date[0], '%Y-%M-%d')
-    #return jsonify(max_date)
-    #return jsonify({"db":max_date[0],"conv":mx_dt})
     
     if str_dt <= mx_dt and str_dt >= mi_dt:
-        return jsonify ({"yay!": f"The date {start_date} entered by the user exists in database."})
+        sel=[func.count(Measurement.date), func.min(Measurement.tobs), func.max(Measurement.tobs), func.avg(Measurement.tobs)]
+        temp_range=session.query(*sel).\
+        filter(Measurement.date >= start_date).\
+        order_by(Measurement.date).all()
+        temp_range
+        
+        session.close()
+        
+        result=list(np.ravel(temp_range))
+                    
+        return jsonify (result)
     else:
         return jsonify ({"error": f"The date {start_date} entered by the user does not exist in database."}), 404
     
-    #for date in Measurement:
-        #search_term = character["real_name"].replace(" ", "").lower()
-
-        #if search_term == canonicalized:
-            #return jsonify(character)
-    
-    # Query
-    
-    
-    #canonicalized = real_name.replace(" ", "").lower()
-    #query_date = dt.date(start_date) - dt.timedelta(days=365)
+@app.route("/api/v1.0/start/end/<start_date>")
+def startdate(start_date):
         
 if __name__ == '__main__':
     app.run(debug=True)
