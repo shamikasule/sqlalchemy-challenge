@@ -40,7 +40,7 @@ def home():
         f"/api/v1.0/stations<br/>"
         f"/api/v1.0/tobs<br/>"
         f"/api/v1.0/start/<start><br/>"
-           
+        f"/api/v1.0/start/end/<start_date>/<end_date>"          
     )
 
 @app.route("/api/v1.0/precipitation")
@@ -99,19 +99,23 @@ def tobs():
 
 @app.route("/api/v1.0/start/<start_date>")
 def startdate(start_date):
-
+    # Create session (link) from Python to the DB
     session = Session(engine)
     
+    # Get max date from DB
     max_date = session.query(Measurement.date).order_by(Measurement.date.desc()).first()
     
+    # Get min date from DB
     min_date = session.query(Measurement.date).order_by(Measurement.date.asc()).first()
     
+    # Convert to date format
     mx_dt = dt.datetime.strptime(max_date[0], '%Y-%m-%d')
     mi_dt = dt.datetime.strptime(min_date[0], '%Y-%m-%d')
     str_dt = dt.datetime.strptime(start_date,'%Y-%m-%d')
     
+    # Check to see if user enters a valid date in valid format-if yes,run calculation query-if no, return error
     if str_dt <= mx_dt and str_dt >= mi_dt:
-        sel=[func.count(Measurement.date), func.min(Measurement.tobs), func.max(Measurement.tobs), func.avg(Measurement.tobs)]
+        sel=[func.min(Measurement.tobs), func.max(Measurement.tobs), func.avg(Measurement.tobs)]
         temp_range=session.query(*sel).\
         filter(Measurement.date >= start_date).\
         order_by(Measurement.date).all()
@@ -125,8 +129,39 @@ def startdate(start_date):
     else:
         return jsonify ({"error": f"The date {start_date} entered by the user does not exist in database."}), 404
     
-@app.route("/api/v1.0/start/end/<start_date>")
-def startdate(start_date):
+@app.route("/api/v1.0/start/end/<start_date>/<end_date>")
+def start_end_date(start_date,end_date):
+   
+    # Create session (link) from Python to the DB
+    session = Session(engine)
+         
+    # Get max date from DB
+    max_date = session.query(Measurement.date).order_by(Measurement.date.desc()).first()
+    
+    # Get min date from DB
+    min_date = session.query(Measurement.date).order_by(Measurement.date.asc()).first()
+    
+    # Convert to date format
+    mx_dt = dt.datetime.strptime(max_date[0], '%Y-%m-%d')
+    mi_dt = dt.datetime.strptime(min_date[0], '%Y-%m-%d')
+    str_dt = dt.datetime.strptime(start_date,'%Y-%m-%d')
+    end_dt = dt.datetime.strptime(end_date,'%Y-%m-%d')
+    
+    if (str_dt <= mx_dt and str_dt >= mi_dt):
+        sel=[func.min(Measurement.tobs), func.max(Measurement.tobs), func.avg(Measurement.tobs)]
+        temp_range=session.query(*sel).\
+        filter(Measurement.date >= start_date).\
+        filter(Measurement.date <= end_date).\
+        order_by(Measurement.date).all()
+        temp_range
+        
+        session.close()
+       
+        result=list(np.ravel(temp_range))
+                    
+        return jsonify (result)
+    else:
+        return jsonify ({"error": f"The date {start_date} entered by the user does not exist in database."}), 404
         
 if __name__ == '__main__':
     app.run(debug=True)
