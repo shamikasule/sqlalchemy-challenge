@@ -1,4 +1,5 @@
 import numpy as np
+import datetime as dt
 
 import sqlalchemy
 from sqlalchemy.ext.automap import automap_base
@@ -37,12 +38,14 @@ def home():
         f"The following routes are available:<br/>"
         f"/api/v1.0/precipitation<br/>"
         f"/api/v1.0/stations<br/>"
-        f"/api/v1.0/tobs"
+        f"/api/v1.0/tobs<br/>"
+        f"/api/v1.0/start/<start><br/>"
+           
     )
 
 @app.route("/api/v1.0/precipitation")
 def precipitation():
-    # Create our session (link) from Python to the DB
+    # Create session (link) from Python to the DB
     session = Session(engine)
 
     # Query
@@ -61,7 +64,7 @@ def precipitation():
 
 @app.route("/api/v1.0/stations")
 def stations():
-    # Create our session (link) from Python to the DB
+    # Create session (link) from Python to the DB
     session = Session(engine)
 
     # Query
@@ -76,7 +79,7 @@ def stations():
 
 @app.route("/api/v1.0/tobs")
 def tobs():
-    # Create our session (link) from Python to the DB
+    # Create session (link) from Python to the DB
     session = Session(engine)
 
     # Query
@@ -94,5 +97,43 @@ def tobs():
 
     return jsonify(result)
 
+@app.route("/api/v1.0/start/<start_date>")
+def startdate(start_date):
+    
+    #test to return date
+    #d={"date":start_date}
+    
+    #return jsonify(d)
+
+    session = Session(engine)
+    
+    max_date = session.query(Measurement.date).order_by(Measurement.date.desc()).first()
+    
+    min_date = session.query(Measurement.date).order_by(Measurement.date.asc()).first()
+    
+    mx_dt = dt.datetime.strptime(max_date[0], '%Y-%m-%d')
+    mi_dt = dt.datetime.strptime(min_date[0], '%Y-%m-%d')
+    str_dt = dt.datetime.strptime(start_date,'%Y-%m-%d')
+    #mx_dt = dt.datetime.strptime(max_date[0], '%Y-%M-%d')
+    #return jsonify(max_date)
+    #return jsonify({"db":max_date[0],"conv":mx_dt})
+    
+    if str_dt <= mx_dt and str_dt >= mi_dt:
+        return jsonify ({"yay!": f"The date {start_date} entered by the user exists in database."})
+    else:
+        return jsonify ({"error": f"The date {start_date} entered by the user does not exist in database."}), 404
+    
+    #for date in Measurement:
+        #search_term = character["real_name"].replace(" ", "").lower()
+
+        #if search_term == canonicalized:
+            #return jsonify(character)
+    
+    # Query
+    
+    
+    #canonicalized = real_name.replace(" ", "").lower()
+    #query_date = dt.date(start_date) - dt.timedelta(days=365)
+        
 if __name__ == '__main__':
     app.run(debug=True)
