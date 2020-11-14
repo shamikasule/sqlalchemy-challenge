@@ -42,3 +42,7 @@ To run this project, install or check installation of:
 * query results are saved as pandas df & plotted as histogram.
 
 ### Climate App:
+* created routes for home page listing all available routes. There are static & dynamic routes.
+* for query to calculate avg.precipitation, converted the results to a dictionary with date as key & avg.precipitation values as value.
+* for dynamic routes, added a conversion of date string to datetime to check if date is entered in valid format & to be able to check the date conditionals.
+* converted the o/p list to dictionary.
