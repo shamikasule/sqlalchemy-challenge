@@ -33,9 +33,8 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    print("Server received request for 'Home' page...")
     return ("Welcome to Climate App!<br/>"
-        f"The following routes are available:<br/>"
+        f"The following routes are available for data analysis & exploration:<br/>"
         f"/api/v1.0/precipitation<br/>"
         f"/api/v1.0/stations<br/>"
         f"/api/v1.0/tobs<br/>"
@@ -91,7 +90,7 @@ def tobs():
     temp_range=session.query(*sel).\
     filter(Measurement.station == 'USC00519281').\
     filter(func.strftime("%Y", Measurement.date) == "2017").\
-    order_by(Measurement.tobs.desc()).all()
+    order_by(Measurement.date.desc()).all()
     temp_range
 
     session.close()
@@ -126,9 +125,6 @@ def startdate(start_date):
         temp_range
         
         session.close()
-        
-        # Convert list of tuples into normal list
-        #result=list(np.ravel(temp_range))
         
         #Create dictionary
         if (len(temp_range)>0):
@@ -171,9 +167,6 @@ def start_end_date(start_date,end_date):
         temp_range
         
         session.close()
-       
-        # Convert list of tuples into normal list
-        #result=list(np.ravel(temp_range))
         
         #Create dictionary
         if (len(temp_range)>0):
