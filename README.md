@@ -8,8 +8,8 @@
 * [Analysis](#analysis)
 
 ## General info
-This is a SQLAlchemy data analysis & exploration project. A sqlite database that has hawai's stations data & precipitation & temperature
-observations for a period of 2010 - 2017 is the input/resource file for analysis. Analysis is done using combination
+This is a SQLAlchemy data analysis & exploration project. A sqlite database that has Hawaii's stations data, precipitation & temperature
+observations for a time period of 2010 - 2017 is the input/resource file for analysis. Analysis is done using combination
 of SQLAlchemy, ORM queries, pandas & Flask APIs. 
 
 ## Technologies
@@ -25,7 +25,7 @@ To run this project, install or check installation of:
 
 
 ### Precipitation Analysis:
- Initial steps of connecting to sqlite database, reflecting tables into classes & saving references to those classes done using SQLAlchemy.
+ Initial steps of connecting to sqlite database, reflecting tables into classes & saving references to those classes is done using SQLAlchemy.
 * query to get most recent date in the db.
 * used dt.timedelta to get date from a year ago from most recent date.
 * designed a query to retrieve the dates & avg. precipitation scores.
@@ -44,5 +44,5 @@ To run this project, install or check installation of:
 ### Climate App:
 * created routes for home page listing all available routes. There are static & dynamic routes.
 * for query to calculate avg.precipitation, converted the results to a dictionary with date as key & avg.precipitation values as value.
-* for dynamic routes, added a conversion of date string to datetime to check if date is entered in valid format & to be able to check the date conditionals.
+* for dynamic routes, added a conversion of date string to datetime to check if date entered is in valid format.
 * converted the o/p list to dictionary.
