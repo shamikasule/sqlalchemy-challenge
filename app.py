@@ -56,11 +56,16 @@ def precipitation():
     year_range
 
     session.close()
-
-    # Convert list of tuples into normal list
-    result = list(np.ravel(year_range))
-
-    return jsonify(result)
+    
+    #Create dictionary
+    prcp_data = {}
+    for row in year_range:
+        #data = row[0]
+        key = row[0]
+        val = row[1]
+        prcp_data[key]=val
+  
+    return jsonify(prcp_data)
 
 @app.route("/api/v1.0/stations")
 def stations():
@@ -113,7 +118,7 @@ def startdate(start_date):
     mi_dt = dt.datetime.strptime(min_date[0], '%Y-%m-%d')
     str_dt = dt.datetime.strptime(start_date,'%Y-%m-%d')
     
-    # Check to see if user enters a valid date in valid format-if yes,run calculation query-if no, return error
+    # Check to see if user enters a valid date in valid format-if yes,runs the calculation query-else returns error message
     if str_dt <= mx_dt and str_dt >= mi_dt:
         sel=[func.min(Measurement.tobs), func.max(Measurement.tobs), func.avg(Measurement.tobs)]
         temp_range=session.query(*sel).\
@@ -123,9 +128,20 @@ def startdate(start_date):
         
         session.close()
         
+        # Convert list of tuples into normal list
         result=list(np.ravel(temp_range))
-                    
-        return jsonify (result)
+        
+         #Create dictionary
+    #temp_data ={}
+    #temp_data["Min.Temp"] = []
+    #temp_data["Max.Temp"]=[]
+    #temp_data["Avg.Temp"]=[]
+    #for Min.Temp, Max.Temp, Avg.Temp in temp_range:
+        #temp_data["Min.Temp"] = [0][0]
+        #temp_data["Max.Temp"] = [0][1]
+        #temp_data["Avg.Temp"] = [0][2]
+                          
+        return jsonify (temp_data)
     else:
         return jsonify ({"error": f"The date {start_date} entered by the user does not exist in database."}), 404
     
